@@ -1,19 +1,5 @@
-#include <WiFiNINA.h>
-#include <ArduinoMqttClient.h> 
 #include <Arduino_LSM6DS3.h>
-#include "secrets.h"
-
-char ssid[] = SECRET_SSID;
-char pass[] = SECRET_PASS;
-
-WiFiClient wifiClient;
-MqttClient mqttClient(wifiClient);
-
-const char broker[] = "10.0.0.130";  //10.0.0.216
-int port     = 1883;
-const char xtopic[]  = "x_topic";
-const char ytopic[]  = "y_topic";
-const char ztopic[]  = "z_topic";
+#include "mqtt.h"
 
 //set interval for sending messages (milliseconds)
 const long interval = 166;
@@ -29,6 +15,7 @@ float x_avg = 0;
 float y_avg = 0;
 float z_avg = 0;
 
+MQTT mqtt;
 
 void setup() {
 
@@ -55,55 +42,11 @@ void setup() {
   Serial.println();
   Serial.println("Gyroscope in degrees/second");
 
-  // attempt to connect to Wifi network:
-
-  Serial.print("Attempting to connect to WPA SSID: ");
-
-  Serial.println(ssid);
-
-  while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
-
-    // failed, retry
-
-    Serial.print(".");
-
-    delay(5000);
-
-  }
-
-
-  Serial.println("You're connected to the network");
-
-  Serial.println();
-
-
-  Serial.print("Attempting to connect to the MQTT broker: ");
-
-  Serial.println(broker);
-
-
-  if (!mqttClient.connect(broker, port)) {
-
-    Serial.print("MQTT connection failed! Error code = ");
-
-    Serial.println(mqttClient.connectError());
-
-
-    while (1);
-
-  }
-
-
-  Serial.println("You're connected to the MQTT broker!");
-
-  Serial.println();
-
+  mqtt.init();
 }
 
 
 void loop() {
-
-
     if (IMU.accelerationAvailable()) {
       IMU.readAcceleration(x, y, z);
       x_avg += x;
@@ -115,14 +58,8 @@ void loop() {
   // call poll() regularly to allow the library to send MQTT keep alive which
 
   // avoids being disconnected by the broker
-
-  mqttClient.poll();
-
-
+  mqtt.poll();
   unsigned long currentMillis = millis();
-
-
-
   if (currentMillis - previousMillis >= interval) {
     // average values rezero counter
     x_avg /= (float) num_reads;
@@ -135,50 +72,18 @@ void loop() {
 
 
     Serial.print("Sending message to topic: ");
-
-    Serial.println(xtopic);
-
-    Serial.println(x);
-
-
+    Serial.print(x);
+    Serial.print('\r');
     Serial.print("Sending message to topic: ");
-
-    Serial.println(ytopic);
-
-    Serial.println(y);
-
-
+    Serial.print(y);
+    Serial.print('\r');
     Serial.print("Sending message to topic: ");
+    Serial.print(z);
+    Serial.print('\r');
 
-    Serial.println(ztopic);
-
-    Serial.println(z);
-
-
-    // send message, the Print interface can be used to set the message contents
-
-    mqttClient.beginMessage(xtopic);
-
-    mqttClient.print(x);
-
-    mqttClient.endMessage();
-
-
-    mqttClient.beginMessage(ytopic);
-
-    mqttClient.print(y);
-
-    mqttClient.endMessage();
-
-
-    mqttClient.beginMessage(ztopic);
-
-    mqttClient.print(z);
-
-    mqttClient.endMessage();
-
-
-    Serial.println();
+    mqtt.transact_message(x, 'x');
+    mqtt.transact_message(y, 'y');
+    mqtt.transact_message(z, 'z');
 
     // reset avgs
     x_avg = 0;
