@@ -1,2 +1,5 @@
 secrets.h
 bin
+build
+test.cpp
+*.out
