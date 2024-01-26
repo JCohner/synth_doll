@@ -17,7 +17,7 @@ Vec3 operator+(Vec3 lhs, const Vec3 &rhs){
   Vec3 out;
   out.x = lhs.x + rhs.x;
   out.y = lhs.y + rhs.y;
-  out.z = lhs.x + rhs.z;
+  out.z = lhs.z + rhs.z;
   return out;
 }
 
