@@ -1,5 +1,6 @@
 #include "imu.h"
 #include "mqtt.h"
+#include <sstream>
 
 //set interval for sending messages (milliseconds)
 const long interval = 166;
@@ -19,7 +20,6 @@ void setup() {
   mqtt.init();
 }
 
-
 void loop() {
   // call poll() regularly to allow the library to send MQTT keep alive which
   // avoids being disconnected by the broker
@@ -35,15 +35,11 @@ void loop() {
 
 
     Serial.print("Sending message to topic: ");
-    Serial.print(avg_accel.x);
-    Serial.println();
-    Serial.print("Sending message to topic: ");
-    Serial.print(avg_accel.y);
-    Serial.println();
-    Serial.print("Sending message to topic: ");
-    Serial.print(avg_accel.z);
-    Serial.println();
-
+    std::ostringstream ss;
+    ss << avg_accel;
+    auto pose_string = ss.str().c_str();
+    Serial.print(pose_string);
+    Serial.print('\r');
     mqtt.transact_message(avg_accel.x, 'x');
     mqtt.transact_message(avg_accel.y, 'y');
     mqtt.transact_message(avg_accel.z, 'z');

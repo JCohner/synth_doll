@@ -4,12 +4,7 @@
 #include <memory> 
 
 void MQTT::init(){
-  Serial.print("got here\n");
-  Serial.flush();
   mqttClient_ = std::make_unique<MqttClient>(wifiClient_);
-  Serial.print("did not get here\n");
-  Serial.flush();
-
   char ssid[] = SECRET_SSID;
   char pass[] = SECRET_PASS;
   const char broker[] = "10.0.0.130";  //10.0.0.216

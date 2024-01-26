@@ -1,9 +1,6 @@
 #ifndef __IMU_H__
 #define __IMU_H__
 
-// #include <Arduino.h>
-// #include <wiring_private.h>
-// #include <Wire.h>
 #include <Arduino_LSM6DS3.h>
 #include "vec3.h"
 
