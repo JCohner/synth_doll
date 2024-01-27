@@ -34,3 +34,15 @@ void MQTT::init(){
 
   Serial.println();
 }
+
+void MQTT::transact_message(float val, char idx ){
+  mqttClient_->beginMessage(topics[idx].c_str());
+  mqttClient_->print(val);
+  mqttClient_->endMessage();
+}
+
+void MQTT::transact_message(const char* mess, char idx ){
+  mqttClient_->beginMessage(topics[idx].c_str());
+  mqttClient_->print(mess);
+  mqttClient_->endMessage();
+}

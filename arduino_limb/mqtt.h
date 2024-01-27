@@ -20,11 +20,8 @@ class MQTT{
 
     void init();
     void poll() {mqttClient_->poll();}
-    void transact_message(float val, char idx ){
-      mqttClient_->beginMessage(topics[idx].c_str());
-      mqttClient_->print(val);
-      mqttClient_->endMessage();
-    }
+    void transact_message(float val, char idx );
+    void transact_message(const char* mess, char idx );
 
   private:
     std::unique_ptr<MqttClient> mqttClient_;

@@ -25,6 +25,7 @@ void TC3_Handler(void) {
   mqtt.transact_message(avg_accel.x, 'x');
   mqtt.transact_message(avg_accel.y, 'y');
   mqtt.transact_message(avg_accel.z, 'z');
+  // mqqt.transact_message(pose_string, 'p'); // TODO: determine if this is more reliable
   TC3->COUNT16.INTFLAG.bit.MC0 = 1; // clears the interrupt
 }
 
